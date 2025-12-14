@@ -21,6 +21,7 @@ pipeline {
         stage('Install Maptool') {
             steps {
                 sh """
+                cd "${BUILD_DIR}"
                 wget "https://github.com/navit-gps/dependencies/raw/master/gh-actions-mapserver/navit_trunk_1ed7f1b.sh"
                 chmod +x navit_trunk_1ed7f1b.sh
                 mkdir navit
