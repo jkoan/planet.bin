@@ -9,9 +9,6 @@ pipeline {
         stage('Prepare') {
             steps {
                 cleanWs()
-                sh """
-                mkdir -p "${BUILD_DIR}"
-                """
             }
         }
 
