@@ -37,7 +37,7 @@ pipeline {
         stage('Generate Binfile') {
             steps {
                 sh """
-                ./navit/bin/maptool -i --64bit --protobuf --slice-size 4294967296 planet.osm.pbf planet.bin
+                ./navit/bin/maptool --64bit --protobuf --slice-size 4294967296 -i planet.osm.pbf planet.bin
                 """
             }
         }
