@@ -2,16 +2,13 @@ pipeline {
     agent any
 
     parameters {
-        string(name: 'PLANET_URL', description: 'URL zur Planet-Datei in xml')
-    }
-
-    environment {
-        BUILD_DIR = "build/${env.BUILD_NUMBER}"
+        string(name: 'PLANET_URL', description: 'URL zur Planet-Datei in osm.pbf')
     }
 
     stages {
         stage('Prepare') {
             steps {
+                cleanWs()
                 sh """
                 mkdir -p "${BUILD_DIR}"
                 """
@@ -21,7 +18,6 @@ pipeline {
         stage('Install Maptool') {
             steps {
                 sh """
-                cd "${BUILD_DIR}"
                 curl -L "https://github.com/navit-gps/dependencies/raw/master/gh-actions-mapserver/navit_trunk_1ed7f1b.sh" -o navit_trunk_1ed7f1b.sh
                 chmod +x navit_trunk_1ed7f1b.sh
                 mkdir navit
@@ -33,8 +29,7 @@ pipeline {
         stage('Download Planet') {
             steps {
                 sh """
-                cd "${BUILD_DIR}"
-                curl -L "${PLANET_URL}" -o planet.osm
+                curl -L "${PLANET_URL}" -o planet.osm.pbf
                 """
             }
         }
@@ -42,8 +37,7 @@ pipeline {
         stage('Generate Binfile') {
             steps {
                 sh """
-                cd "${BUILD_DIR}"
-                ./navit/maptool planet.osm.pbf
+                ./navit/bin/maptool -i --64bit --protobuf --slice-size 4294967296 planet.osm.pbf planet.bin
                 """
             }
         }
