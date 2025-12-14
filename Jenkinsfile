@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     parameters {
-        string(name: 'PLANET_URL', description: 'URL zur Planet-Datei')
+        string(name: 'PLANET_URL', description: 'URL zur Planet-Datei in xml')
     }
 
     environment {
@@ -18,11 +18,22 @@ pipeline {
             }
         }
 
+        stage('Install Maptool') {
+            steps {
+                sh """
+                wget "https://github.com/navit-gps/dependencies/raw/master/gh-actions-mapserver/navit_trunk_1ed7f1b.sh"
+                chmod +x navit_trunk_1ed7f1b.sh
+                mkdir navit
+                ./navit_trunk_1ed7f1b.sh --skip-license --prefix=navit
+                """
+            }
+        }
+        
         stage('Download Planet') {
             steps {
                 sh """
                 cd "${BUILD_DIR}"
-                curl -L "${PLANET_URL}" -o planet.osm.pbf
+                curl -L "${PLANET_URL}" -o planet.osm
                 """
             }
         }
@@ -31,7 +42,7 @@ pipeline {
             steps {
                 sh """
                 cd "${BUILD_DIR}"
-                ./maptool planet.osm.pbf
+                ./navit/maptool planet.osm.pbf
                 """
             }
         }
